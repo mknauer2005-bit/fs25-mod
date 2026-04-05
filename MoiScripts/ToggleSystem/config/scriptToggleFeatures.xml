@@ -1,0 +1,17 @@
+<svapaScriptToggleSystem>
+    <features>
+
+        <feature name="randomEvents"
+                 default="true"
+                 description="ui_toggle_randomEvents" />
+
+        <feature name="farmlandProgress"
+                 default="true"
+                 description="ui_toggle_farmlandProgress" />
+
+        <feature name="npcSystem"
+                 default="false"
+                 description="ui_toggle_npcSystem" />
+
+    </features>
+</svapaScriptToggleSystem>
