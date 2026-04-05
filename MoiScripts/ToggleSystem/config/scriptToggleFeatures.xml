@@ -1,17 +1,9 @@
-<svapaScriptToggleSystem>
-    <features>
-
-        <feature name="randomEvents"
-                 default="true"
-                 description="ui_toggle_randomEvents" />
-
-        <feature name="farmlandProgress"
-                 default="true"
-                 description="ui_toggle_farmlandProgress" />
-
-        <feature name="npcSystem"
-                 default="false"
-                 description="ui_toggle_npcSystem" />
-
-    </features>
-</svapaScriptToggleSystem>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<toggleFeatures>
+    <feature id="randomEvents.startupMissingVehicle" description="Кража техники при входе в игру" default="true" targetObject="g_randomTheftEvents" targetPath="startupMissingVehicle.enabled" />
+    <feature id="randomEvents.fuel" description="Кража топлива" default="true" targetObject="g_randomTheftEvents" targetPath="events.fuel.enabled" />
+    <feature id="randomEvents.seeds" description="Кража семян" default="true" targetObject="g_randomTheftEvents" targetPath="events.seeds.enabled" />
+    <feature id="randomEvents.fertilizer" description="Кража удобрений" default="true" targetObject="g_randomTheftEvents" targetPath="events.fertilizer.enabled" />
+    <feature id="randomEvents.drought" description="Глобальное событие: засуха" default="true" targetObject="g_randomTheftEvents" targetPath="globalEvents.drought.enabled" />
+    <feature id="randomEvents.flood" description="Глобальное событие: наводнение" default="true" targetObject="g_randomTheftEvents" targetPath="globalEvents.flood.enabled" />
+</toggleFeatures>
