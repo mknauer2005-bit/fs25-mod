@@ -18,6 +18,12 @@ local function stWarn(message, ...)
     print(string.format("%s [WARN] %s", ST_LOG_PREFIX, ok and formatted or template))
 end
 
+local function stDbg(message, ...)
+    local template = tostring(message or "")
+    local ok, formatted = pcall(string.format, template, ...)
+    print(string.format("%s [DEBUG] %s", ST_LOG_PREFIX, ok and formatted or template))
+end
+
 local function stNormalizeDir(dir)
     if dir == nil or dir == "" then
         return ""
@@ -337,6 +343,19 @@ local function stExposeGlobal(name, value)
     end
 end
 
+local function stMapLegacyToggleId(toggleId)
+    local legacyMap = {
+        ["randomEvents.startupMissingVehicle"] = "randomTheftEvents.startupMissingVehicle.enabled",
+        ["randomEvents.fuel"] = "randomTheftEvents.events.fuel.enabled",
+        ["randomEvents.seeds"] = "randomTheftEvents.events.seeds.enabled",
+        ["randomEvents.fertilizer"] = "randomTheftEvents.events.fertilizer.enabled",
+        ["randomEvents.drought"] = "randomTheftEvents.globalEvents.drought.enabled",
+        ["randomEvents.flood"] = "randomTheftEvents.globalEvents.flood.enabled"
+    }
+
+    return legacyMap[tostring(toggleId)] or toggleId
+end
+
 g_scriptToggleMenuOnCreateData = g_scriptToggleMenuOnCreateData or {}
 
 function ScriptToggleMenuTrigger_onCreate(nodeId)
@@ -344,6 +363,8 @@ function ScriptToggleMenuTrigger_onCreate(nodeId)
     local actionTextRaw = getUserAttribute(nodeId, "actionText")
     local actionText = stResolveActionText(actionTextRaw)
     local triggerNode = stFindTriggerNode(nodeId)
+
+    stDbg("onCreate root=%s trigger=%s config=%s actionText=%s", tostring(nodeId), tostring(triggerNode), tostring(rawConfigPath), tostring(actionText))
 
     table.insert(g_scriptToggleMenuOnCreateData, {
         rootNode = nodeId,
@@ -428,12 +449,15 @@ function SvapaToggleManager:loadToggleStateFile()
     self.toggleFeatureStates = {}
 
     local stateFilePath = self:getStateFilePath()
+    stDbg("loadToggleStateFile path=%s", tostring(stateFilePath))
     if stateFilePath == nil or stateFilePath == "" or fileExists == nil or not fileExists(stateFilePath) then
+        stDbg("loadToggleStateFile skipped: file missing")
         return false
     end
 
     local xmlFile = loadXMLFile("svapaToggleStatesXML", stateFilePath)
     if xmlFile == nil or xmlFile == 0 then
+        stWarn("loadToggleStateFile failed to open xml: %s", tostring(stateFilePath))
         return false
     end
 
@@ -447,18 +471,129 @@ function SvapaToggleManager:loadToggleStateFile()
         local id = getXMLString(xmlFile, key .. "#id")
         local value = getXMLBool(xmlFile, key .. "#value")
         if id ~= nil and id ~= "" then
-            self.toggleFeatureStates[tostring(id)] = value == true
+            local mappedId = stMapLegacyToggleId(id)
+            self.toggleFeatureStates[tostring(mappedId)] = value == true
+            stDbg("loadToggleStateFile state[%d] id=%s mappedId=%s value=%s", index, tostring(id), tostring(mappedId), tostring(value == true))
         end
 
         index = index + 1
     end
 
     delete(xmlFile)
+    stDbg("loadToggleStateFile loadedCount=%d", index)
     return true
+end
+
+function SvapaToggleManager:ensureFeaturesLoadedForRuntime()
+    if self.toggleFeatures ~= nil and #self.toggleFeatures > 0 then
+        return true
+    end
+
+    for _, trigger in ipairs(self.toggleTriggers or {}) do
+        if trigger ~= nil and trigger.ensureConfigLoaded ~= nil then
+            local ok, loaded = pcall(function()
+                return trigger:ensureConfigLoaded()
+            end)
+
+            if ok and loaded == true and self.toggleFeatures ~= nil and #self.toggleFeatures > 0 then
+                stDbg("ensureFeaturesLoadedForRuntime success featureCount=%d", #self.toggleFeatures)
+                return true
+            end
+        end
+    end
+
+    stDbg("ensureFeaturesLoadedForRuntime no features loaded")
+    return self.toggleFeatures ~= nil and #self.toggleFeatures > 0
+end
+
+function SvapaToggleManager:getFeatureById(toggleId)
+    for _, feature in ipairs(self.toggleFeatures or {}) do
+        if tostring(feature.id) == tostring(toggleId) then
+            return feature
+        end
+    end
+    return nil
+end
+
+function SvapaToggleManager:getChildFeatures(parentId)
+    local result = {}
+    if parentId == nil or parentId == "" then
+        return result
+    end
+
+    for _, feature in ipairs(self.toggleFeatures or {}) do
+        if tostring(feature.parentId or "") == tostring(parentId) then
+            table.insert(result, feature)
+        end
+    end
+
+    return result
+end
+
+function SvapaToggleManager:getToggleValue(toggleId, defaultValue)
+    local value = self.toggleFeatureStates[tostring(toggleId)]
+    if value == nil then
+        return defaultValue == true
+    end
+    return value == true
+end
+
+function SvapaToggleManager:isFeatureForcedOff(feature)
+    if feature == nil then
+        return false
+    end
+
+    local parentId = feature.parentId
+    while parentId ~= nil and parentId ~= "" do
+        local parentFeature = self:getFeatureById(parentId)
+        local parentDefault = parentFeature ~= nil and parentFeature.defaultValue or true
+        local parentRawValue = self:getToggleValue(parentId, parentDefault)
+        if parentRawValue ~= true then
+            return true
+        end
+
+        if parentFeature == nil then
+            break
+        end
+        parentId = parentFeature.parentId
+    end
+
+    return false
+end
+
+function SvapaToggleManager:getEffectiveToggleValue(toggleId, defaultValue)
+    local feature = self:getFeatureById(toggleId)
+    local rawValue = self:getToggleValue(toggleId, feature ~= nil and feature.defaultValue or defaultValue)
+
+    if rawValue ~= true then
+        return false
+    end
+
+    if feature ~= nil and self:isFeatureForcedOff(feature) then
+        return false
+    end
+
+    return true
+end
+
+function SvapaToggleManager:setToggleValue(toggleId, value)
+    local feature = self:getFeatureById(toggleId)
+    local boolValue = value == true
+    local id = tostring(toggleId)
+
+    if feature ~= nil and feature.parentId ~= nil and feature.parentId ~= "" and self:isFeatureForcedOff(feature) then
+        stDbg("setToggleValue id=%s blockedByParent=true requestedValue=%s rawValueKept=%s", id, tostring(boolValue), tostring(self:getToggleValue(id, feature.defaultValue)))
+        return
+    end
+
+    self.toggleFeatureStates[id] = boolValue
+    self.pendingRuntimeApply = true
+    stDbg("setToggleValue id=%s rawValue=%s", id, tostring(boolValue))
 end
 
 function SvapaToggleManager:saveToggleStateFile()
     local stateFilePath = self:getStateFilePath()
+    stDbg("saveToggleStateFile path=%s", tostring(stateFilePath))
     if stateFilePath == nil or stateFilePath == "" then
         stWarn("Save skipped: savegame directory is unavailable")
         return false
@@ -472,9 +607,18 @@ function SvapaToggleManager:saveToggleStateFile()
 
     local index = 0
     for _, feature in ipairs(self.toggleFeatures or {}) do
+        local rawValue = self:getToggleValue(feature.id, feature.defaultValue)
+
         local key = string.format("toggleStates.state(%d)", index)
         setXMLString(xmlFile, key .. "#id", tostring(feature.id))
-        setXMLBool(xmlFile, key .. "#value", self:getToggleValue(feature.id, feature.defaultValue))
+        setXMLBool(xmlFile, key .. "#value", rawValue)
+        stDbg(
+            "saveToggleStateFile state[%d] id=%s rawValue=%s effectiveValue=%s",
+            index,
+            tostring(feature.id),
+            tostring(rawValue),
+            tostring(self:getEffectiveToggleValue(feature.id, feature.defaultValue))
+        )
         index = index + 1
     end
 
@@ -484,11 +628,13 @@ function SvapaToggleManager:saveToggleStateFile()
     self.pendingRuntimeApply = true
     self:applyToggleTargets()
 
+    stDbg("saveToggleStateFile savedCount=%d", index)
     return true
 end
 
 function SvapaToggleManager:loadFeatures(configPath)
     local resolvedConfigPath = stResolveConfigPath(configPath, stResolveModDir())
+    stDbg("loadFeatures rawPath=%s resolvedPath=%s", tostring(configPath), tostring(resolvedConfigPath))
     if resolvedConfigPath == nil or resolvedConfigPath == "" then
         stWarn("Toggle config path is empty")
         self.toggleFeatures = {}
@@ -515,6 +661,7 @@ function SvapaToggleManager:loadFeatures(configPath)
         local defaultValue = getXMLBool(xmlFile, key .. "#default") == true
         local targetObject = getXMLString(xmlFile, key .. "#targetObject")
         local targetPath = getXMLString(xmlFile, key .. "#targetPath")
+        local parentId = getXMLString(xmlFile, key .. "#parentId")
 
         if id ~= nil and id ~= "" then
             table.insert(loaded, {
@@ -522,8 +669,18 @@ function SvapaToggleManager:loadFeatures(configPath)
                 description = tostring(description),
                 defaultValue = defaultValue,
                 targetObject = targetObject ~= nil and tostring(targetObject) or nil,
-                targetPath = targetPath ~= nil and tostring(targetPath) or nil
+                targetPath = targetPath ~= nil and tostring(targetPath) or nil,
+                parentId = parentId ~= nil and tostring(parentId) or nil
             })
+            stDbg(
+                "loadFeatures feature[%d] id=%s default=%s parentId=%s targetObject=%s targetPath=%s",
+                index,
+                tostring(id),
+                tostring(defaultValue),
+                tostring(parentId),
+                tostring(targetObject),
+                tostring(targetPath)
+            )
         end
 
         index = index + 1
@@ -531,60 +688,47 @@ function SvapaToggleManager:loadFeatures(configPath)
 
     delete(xmlFile)
     self.toggleFeatures = loaded
+    stDbg("loadFeatures loadedCount=%d", #loaded)
     return true
 end
 
-function SvapaToggleManager:getToggleValue(toggleId, defaultValue)
-    local value = self.toggleFeatureStates[tostring(toggleId)]
-    if value == nil then
-        return defaultValue == true
-    end
-    return value == true
-end
-
-function SvapaToggleManager:setToggleValue(toggleId, value)
-    self.toggleFeatureStates[tostring(toggleId)] = value == true
-    self.pendingRuntimeApply = true
-end
-
-function SvapaToggleManager:getFeatureById(toggleId)
-    for _, feature in ipairs(self.toggleFeatures or {}) do
-        if tostring(feature.id) == tostring(toggleId) then
-            return feature
-        end
-    end
-    return nil
-end
-
 function SvapaToggleManager:isToggleEnabled(toggleId, defaultValue)
-    local feature = self:getFeatureById(toggleId)
-    if feature ~= nil then
-        return self:getToggleValue(feature.id, feature.defaultValue)
-    end
-    return self:getToggleValue(toggleId, defaultValue)
+    return self:getEffectiveToggleValue(toggleId, defaultValue)
 end
 
 function SvapaToggleManager:applyFeatureToRuntime(feature)
-    if feature == nil or feature.targetObject == nil or feature.targetObject == "" or feature.targetPath == nil or feature.targetPath == "" then
+    if feature == nil then
+        stDbg("applyFeatureToRuntime skip: feature=nil")
+        return true
+    end
+
+    if feature.targetObject == nil or feature.targetObject == "" or feature.targetPath == nil or feature.targetPath == "" then
+        stDbg("applyFeatureToRuntime id=%s skip: no runtime target", tostring(feature.id))
         return true
     end
 
     local rootObject = stResolveGlobalObject(feature.targetObject)
     if rootObject == nil then
+        stWarn("applyFeatureToRuntime id=%s targetObject=%s unresolved", tostring(feature.id), tostring(feature.targetObject))
         return false
     end
 
     local parent, fieldName = stResolveParentAndField(rootObject, feature.targetPath)
     if parent == nil or fieldName == nil then
+        stWarn("applyFeatureToRuntime id=%s targetPath=%s unresolved", tostring(feature.id), tostring(feature.targetPath))
         return false
     end
 
-    parent[fieldName] = self:getToggleValue(feature.id, feature.defaultValue)
+    local value = self:getEffectiveToggleValue(feature.id, feature.defaultValue)
+    local previous = parent[fieldName]
+    parent[fieldName] = value
+    stDbg("applyFeatureToRuntime id=%s target=%s.%s previous=%s new=%s", tostring(feature.id), tostring(feature.targetObject), tostring(feature.targetPath), tostring(previous), tostring(value))
     return true
 end
 
 function SvapaToggleManager:applyToggleTargets()
     local allResolved = true
+    stDbg("applyToggleTargets start featureCount=%d", #(self.toggleFeatures or {}))
 
     for _, feature in ipairs(self.toggleFeatures or {}) do
         local ok = self:applyFeatureToRuntime(feature)
@@ -595,11 +739,13 @@ function SvapaToggleManager:applyToggleTargets()
 
     self.lastRuntimeApplySuccess = allResolved
     self.pendingRuntimeApply = not allResolved
+    stDbg("applyToggleTargets done allResolved=%s pendingRuntimeApply=%s", tostring(allResolved), tostring(self.pendingRuntimeApply))
     return allResolved
 end
 
 function SvapaToggleManager:update(dt)
     if self.pendingRuntimeApply then
+        stDbg("update pendingRuntimeApply=true dt=%s", tostring(dt))
         self:applyToggleTargets()
     end
 end
@@ -615,11 +761,15 @@ function SvapaToggleManager:getFeatureEntriesForTrigger(trigger)
     end
 
     for _, feature in ipairs(trigger.config.features or {}) do
+        local isForcedOff = self:isFeatureForcedOff(feature)
         table.insert(result, {
             id = feature.id,
             description = feature.description,
-            value = self:getToggleValue(feature.id, feature.defaultValue),
-            defaultValue = feature.defaultValue
+            value = self:getEffectiveToggleValue(feature.id, feature.defaultValue),
+            rawValue = self:getToggleValue(feature.id, feature.defaultValue),
+            defaultValue = feature.defaultValue,
+            parentId = feature.parentId,
+            isDisabled = isForcedOff
         })
     end
 
@@ -628,8 +778,10 @@ end
 
 function SvapaToggleManager:openGUI(trigger)
     if trigger == nil then
+        stWarn("openGUI skipped: trigger=nil")
         return
     end
+    stDbg("openGUI triggerNode=%s configPath=%s", tostring(trigger.triggerNode), tostring(trigger.configPath))
 
     if not trigger:ensureConfigLoaded() then
         return
@@ -697,6 +849,7 @@ function SvapaToggleManager:discoverTriggersFromScene()
 end
 
 function SvapaToggleManager:loadMap(mapNode, missionInfo, baseDirectory)
+    stDbg("loadMap begin")
     self:loadToggleStateFile()
     self.pendingRuntimeApply = true
 
@@ -707,10 +860,13 @@ function SvapaToggleManager:loadMap(mapNode, missionInfo, baseDirectory)
     end
 
     self:discoverTriggersFromScene()
+    self:ensureFeaturesLoadedForRuntime()
+    stDbg("loadMap discoveredTriggers=%d onCreateQueued=%d featureCount=%d", #self.toggleTriggers, #g_scriptToggleMenuOnCreateData, #(self.toggleFeatures or {}))
     self:applyToggleTargets()
 end
 
 function SvapaToggleManager:loadMapFinished()
+    stDbg("loadMapFinished begin guiLoaded=%s", tostring(self.guiLoaded))
     if not self.guiLoaded then
         if SvapaToggleGUI ~= nil and SvapaToggleGUI.register ~= nil then
             local ok = pcall(function()
@@ -723,11 +879,13 @@ function SvapaToggleManager:loadMapFinished()
         end
     end
 
+    self:ensureFeaturesLoadedForRuntime()
     self.pendingRuntimeApply = true
     self:applyToggleTargets()
 end
 
 function SvapaToggleManager:addTrigger(rootNode, triggerNode, rawConfigPath, actionText)
+    stDbg("addTrigger root=%s trigger=%s rawConfig=%s actionText=%s", tostring(rootNode), tostring(triggerNode), tostring(rawConfigPath), tostring(actionText))
     if triggerNode == nil or triggerNode == 0 then
         stWarn("Cannot add toggle trigger: invalid node from root %s", tostring(rootNode))
         return nil
@@ -928,7 +1086,6 @@ local function stDeleteMission(mission)
     end
 end
 
-
 local function stInstallMissionHooks()
     if SvapaToggleSystem._hooksInstalled then
         return
@@ -958,5 +1115,9 @@ SvapaToggleSystem.getIsEnabled = SvapaToggleSystem.getToggleValue
 SvapaToggleSystem.isEnabled = SvapaToggleSystem.getToggleValue
 SvapaToggleSystem.getFeatureState = SvapaToggleSystem.getToggleValue
 SvapaToggleSystem.getValue = SvapaToggleSystem.getToggleValue
+
+_G.SvapaToggleBridge = SvapaToggleSystem
+_G.g_svapaToggleBridge = SvapaToggleSystem
+stDbg("bridge aliases registered: SvapaToggleBridge and g_svapaToggleBridge")
 
 stInstallMissionHooks()
