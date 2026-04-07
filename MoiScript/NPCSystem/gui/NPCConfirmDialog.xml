@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<Gui>
+    <Dialog name="NPCConfirmDialogScreen" profile="dialogScreen" closeOnClickOutside="false" isCloseAllowed="true">
+        <Frame profile="mainBox" width="700" height="380" arrangeMethod="vertical">
+            <Text name="title" profile="textHeader" text="Confirm" />
+            <Text name="confirmText" profile="textDefault" text="Do you want to continue?" />
+
+            <Frame profile="buttonRow" width="100%" height="80" arrangeMethod="horizontal">
+                <Button name="yesButton" profile="buttonDefault" text="$l10n_button_yes" onClick="onClickConfirmYes" />
+                <Button name="noButton" profile="buttonDefault" text="$l10n_button_no" onClick="onClickConfirmNo" />
+            </Frame>
+        </Frame>
+    </Dialog>
+</Gui>
