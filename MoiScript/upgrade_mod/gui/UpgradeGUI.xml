@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='utf-8'?>
+<GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+    <GuiElement profile="newLayer" />
+
+    <GuiElement profile="svapaFinalRoot" id="dialogElement">
+        <Bitmap profile="svapaFinalOuterBlack" id="outerBlack" />
+        <Bitmap profile="svapaFinalInnerGray" id="innerGray" />
+        <Bitmap profile="svapaFinalListBlack" id="listBlack" />
+
+        <GuiElement profile="svapaFinalListViewport" id="listViewport">
+            <BoxLayout profile="svapaFinalListContainer" id="listContainer" />
+            <Text profile="svapaFinalEmptyText" id="emptyText" text="Подходящие предприятия не найдены" />
+        </GuiElement>
+
+        <GuiElement profile="svapaFinalCard" id="rowTemplate">
+            <Bitmap profile="svapaFinalCardBg" id="rowBg" />
+            <Bitmap profile="svapaFinalCardInnerBg" id="rowInnerBg" />
+
+            <GuiElement profile="svapaFinalIconBlock" id="iconBlock">
+                <Bitmap profile="svapaFinalFrameBlack" id="iconBlockFrame" />
+                <Bitmap profile="svapaFinalIconBlockInner" id="iconBlockBg" />
+                <Bitmap profile="svapaFinalIcon" id="rowIcon" />
+            </GuiElement>
+
+            <GuiElement profile="svapaFinalEnterpriseBlock" id="enterpriseBlock">
+                <Bitmap profile="svapaFinalFrameBlackWide" id="enterpriseFrame" />
+                <Bitmap profile="svapaFinalEnterpriseInner" id="enterpriseBg" />
+                <Text profile="svapaFinalEnterpriseTitle" id="rowName" text="Название предприятия" />
+                <Text profile="svapaFinalEnterpriseDescription" id="enterpriseDescriptionText" text="Описание предприятия" />
+            </GuiElement>
+
+            <GuiElement profile="svapaFinalUpgradeBlock" id="upgradeBlock">
+                <Bitmap profile="svapaFinalFrameBlackUpgrade" id="upgradeFrame" />
+                <Bitmap profile="svapaFinalUpgradeInner" id="upgradeBg" />
+                <Text profile="svapaFinalUpgradeTitle" id="upgradeTitleText" text="Название улучшения" />
+                <Text profile="svapaFinalUpgradeDescription" id="upgradeDescriptionText" text="Описание улучшения" />
+            </GuiElement>
+
+            <GuiElement profile="svapaFinalActionBlock" id="actionBlock">
+                <Text profile="svapaFinalPriceTitle" id="rowPriceLabel" text="СТОИМОСТЬ" />
+                <Bitmap profile="svapaFinalPriceFrame" id="priceFrame" />
+                <Bitmap profile="svapaFinalPriceBox" id="priceBoxBg" />
+                <Text profile="svapaFinalPriceValue" id="rowPrice" text="0" />
+                <Text profile="svapaFinalHiddenStatus" id="rowStatus" text="" />
+                <Bitmap profile="svapaFinalButtonFrame" id="rowButtonFrame" />
+                <Bitmap profile="svapaFinalButtonBg" id="rowButtonBg" />
+                <Button profile="svapaFinalButton" id="rowButton" text="Модернизировать" />
+            </GuiElement>
+        </GuiElement>
+
+        <Text profile="svapaFinalFooterText" id="footerText" text="Выберите предприятие которое хотите модернизировать. Если кнопки нет - улучшить нельзя" />
+        <Button profile="svapaFinalCloseButton" id="closeButton" text="Выйти" onClick="onClickClose" />
+    </GuiElement>
+
+    <GUIProfiles>
+        <Profile name="svapaFinalRoot" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1920px 1080px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalOverlay" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1920px 1080px" />
+            <imageColor value="1 1 1 1" />
+        </Profile>
+
+        <Profile name="svapaFinalWatermark" extends="baseReference">
+            <position value="0px 120px" />
+            <size value="1920px 900px" />
+            <imageColor value="1 1 1 0.55" />
+        </Profile>
+
+        <Profile name="svapaFinalOuterBlack" extends="baseReference">
+            <position value="34px 26px" />
+            <size value="1848px 1024px" />
+            <imageColor value="0.10 0.16 0.28 1" />
+        </Profile>
+
+        <Profile name="svapaFinalInnerGray" extends="baseReference">
+            <position value="52px 44px" />
+            <size value="1812px 988px" />
+            <imageColor value="0.92 0.94 0.97 1" />
+        </Profile>
+
+        <Profile name="svapaFinalListBlack" extends="baseReference">
+            <position value="61px 131px" />
+            <size value="1796px 837px" />
+            <imageColor value="0.23 0.28 0.37 1" />
+        </Profile>
+
+        <Profile name="svapaFinalListViewport" extends="baseReference">
+            <position value="79px 131px" />
+            <size value="1764px 823px" />
+            <clipping value="true" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalListContainer" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 823px" />
+            <flowDirection value="vertical" />
+            <elementSpacing value="14px" />
+            <alignmentY value="top" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalCard" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 165px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalCardBg" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 165px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalCardInnerBg" extends="baseReference">
+            <position value="2px 2px" />
+            <size value="1760px 161px" />
+            <imageColor value="0.95 0.96 0.98 1" />
+        </Profile>
+
+        <Profile name="svapaFinalIconBlock" extends="baseReference">
+            <position value="18px 20px" />
+            <size value="128px 112px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalFrameBlack" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="128px 112px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalIconBlockInner" extends="baseReference">
+            <position value="2px 2px" />
+            <size value="124px 108px" />
+            <imageSliceId value="noSlice" />
+            <imageColor value="1 1 1 0" />
+        </Profile>
+
+        <Profile name="svapaFinalIcon" extends="baseReference">
+            <position value="10px 8px" />
+            <size value="108px 96px" />
+            <imageSliceId value="noSlice" />
+            <imageColor value="1 1 1 1" />
+        </Profile>
+
+        <Profile name="svapaFinalEnterpriseBlock" extends="baseReference">
+            <position value="164px 20px" />
+            <size value="510px 112px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalFrameBlackWide" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="510px 112px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalEnterpriseInner" extends="baseReference">
+            <position value="2px 2px" />
+            <size value="506px 108px" />
+            <imageColor value="0.96 0.97 0.99 1" />
+        </Profile>
+
+        <Profile name="svapaFinalEnterpriseTitle" extends="fs25_textDefault">
+            <position value="16px 16px" />
+            <size value="476px 52px" />
+            <textSize value="16px" />
+            <textBold value="false" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="top" />
+            <textLayoutMode value="fill" />
+            <textLineHeightScale value="1.00" />
+            <textMaxNumLines value="4" />
+        </Profile>
+
+        <Profile name="svapaFinalEnterpriseDescription" extends="fs25_textDefault">
+            <position value="16px 64px" />
+            <size value="476px 34px" />
+            <textSize value="22px" />
+            <textBold value="true" />
+            <textColor value="0.05 0.12 0.30 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="top" />
+            <textLayoutMode value="fill" />
+            <textLineHeightScale value="1.00" />
+            <textMaxNumLines value="1" />
+        </Profile>
+
+        <Profile name="svapaFinalUpgradeBlock" extends="baseReference">
+            <position value="696px 20px" />
+            <size value="590px 112px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalFrameBlackUpgrade" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="590px 112px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalUpgradeInner" extends="baseReference">
+            <position value="2px 2px" />
+            <size value="586px 108px" />
+            <imageColor value="0.96 0.97 0.99 1" />
+        </Profile>
+
+        <Profile name="svapaFinalUpgradeTitle" extends="fs25_textDefault">
+            <position value="18px 16px" />
+			<size value="550px 52px" />
+            <textSize value="16px" />
+            <textBold value="false" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="top" />
+            <textLayoutMode value="fill" />
+            <textLineHeightScale value="1.00" />
+            <textMaxNumLines value="2" />
+        </Profile>
+
+        <Profile name="svapaFinalUpgradeDescription" extends="fs25_textDefault">
+            <position value="18px 64px" />
+			<size value="550px 34px" />
+            <textSize value="22px" />
+            <textBold value="true" />
+            <textColor value="0.05 0.12 0.30 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="top" />
+            <textLayoutMode value="fill" />
+            <textLineHeightScale value="1.00" />
+            <textMaxNumLines value="1" />
+        </Profile>
+
+        <Profile name="svapaFinalActionBlock" extends="baseReference">
+            <position value="1310px 16px" />
+            <size value="420px 122px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalPriceTitle" extends="fs25_textDefault">
+            <position value="106px 0px" />
+            <size value="200px 18px" />
+            <textSize value="14px" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaFinalPriceFrame" extends="baseReference">
+            <position value="94px 18px" />
+            <size value="224px 42px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalPriceBox" extends="baseReference">
+            <position value="96px 20px" />
+            <size value="220px 38px" />
+            <imageColor value="0.86 0.89 0.94 1" />
+        </Profile>
+
+        <Profile name="svapaFinalPriceValue" extends="fs25_textDefault">
+            <position value="96px 20px" />
+            <size value="220px 38px" />
+            <textSize value="18px" />
+            <textBold value="true" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaFinalHiddenStatus" extends="fs25_textDefault">
+            <position value="0px 0px" />
+            <size value="1px 1px" />
+            <textSize value="1px" />
+            <textColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalButtonFrame" extends="baseReference">
+            <position value="48px 76px" />
+            <size value="330px 50px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaFinalButtonBg" extends="baseReference">
+            <position value="50px 78px" />
+            <size value="326px 46px" />
+            <imageColor value="1 1 1 1" />
+        </Profile>
+
+        <Profile name="svapaFinalButton" extends="baseReference">
+            <position value="50px 78px" />
+            <size value="326px 46px" />
+            <textSize value="18px" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaFinalEmptyText" extends="fs25_textDefault">
+            <position value="0px 336px" />
+            <size value="1764px 28px" />
+            <textSize value="20px" />
+            <textColor value="1 1 1 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaFinalFooterText" extends="fs25_textDefault">
+            <position value="76px 36px" />
+            <size value="1680px 84px" />
+            <textSize value="30px" />
+            <textColor value="0.16 0.22 0.34 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaFinalFooterLogo" extends="baseReference">
+            <position value="1288px 28px" />
+            <size value="250px 88px" />
+            <imageColor value="1 1 1 1" />
+        </Profile>
+
+        <Profile name="svapaFinalCloseButton" extends="buttonBack">
+            <position value="1600px 998px" />
+            <size value="220px 56px" />
+            <textSize value="24px" />
+            <textColor value="0.08 0.08 0.08 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+    </GUIProfiles>
+</GUI>

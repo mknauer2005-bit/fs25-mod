@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='utf-8'?>
+<GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+    <GuiElement profile="newLayer" />
+
+    <GuiElement profile="svapaToggleRoot" id="toggleDialogElement">
+        <Bitmap profile="svapaToggleOuter" id="toggleWindowOuter" />
+        <Bitmap profile="svapaToggleInner" id="toggleWindowInner" />
+        <Bitmap profile="svapaToggleListBg" id="toggleListBackground" />
+
+        <GuiElement profile="svapaToggleListViewport" id="listViewport">
+            <BoxLayout profile="svapaToggleListContainer" id="listContainer" />
+            <Text profile="svapaToggleEmptyText" id="toggleEmptyText" text="Переключатели не найдены" />
+        </GuiElement>
+
+        <GuiElement profile="svapaToggleRowCard" id="rowTemplate">
+            <Bitmap profile="svapaToggleRowBg" id="toggleRowBackground" />
+            <Bitmap profile="svapaToggleDescriptionFrame" id="toggleDescriptionFrame" />
+            <Text profile="svapaToggleDescriptionText" id="toggleDescriptionText" text="Описание переключателя" />
+
+            <BinaryOption profile="svapaToggleBinaryOption" id="toggleBinaryOption">
+                <Bitmap profile="svapaToggleBinaryBackground" name="background" id="toggleOptionBackground" />
+                <Button profile="svapaToggleBinaryLeft" name="left" id="toggleOptionLeft" text="ВЫКЛ." />
+                <Button profile="svapaToggleBinaryRight" name="right" id="toggleOptionRight" text="ВКЛ." />
+                <Text profile="svapaToggleBinaryHiddenText" name="text" id="toggleOptionText" text="" />
+                <Bitmap profile="svapaToggleBinarySlider" name="slider" id="toggleOptionSlider" />
+            </BinaryOption>
+        </GuiElement>
+
+        <Text profile="svapaToggleFooterText" id="toggleFooterText" text="Измените переключатели и нажмите Сохранить" />
+        <Button profile="svapaToggleBottomButtonSave" id="toggleSaveButton" text="Сохранить" onClick="onClickToggleSave" />
+        <Button profile="svapaToggleBottomButtonClose" id="toggleCloseButton" text="Выйти" onClick="onClickToggleClose" />
+        <Button profile="svapaTogglePrevPageButton" id="togglePrevPageButton" text="Назад" onClick="onClickPrevPage" />
+        <Text profile="svapaTogglePageIndicatorText" id="togglePageIndicatorText" text="Страница 1 / 1" />
+        <Button profile="svapaToggleNextPageButton" id="toggleNextPageButton" text="Вперёд" onClick="onClickNextPage" />
+    </GuiElement>
+
+    <GUIProfiles>
+        <Profile name="svapaToggleRoot" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1920px 1080px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleOuter" extends="baseReference">
+            <position value="34px 26px" />
+            <size value="1848px 1024px" />
+            <imageColor value="0.10 0.16 0.28 1" />
+        </Profile>
+
+        <Profile name="svapaToggleInner" extends="baseReference">
+            <position value="52px 44px" />
+            <size value="1812px 988px" />
+            <imageColor value="0.92 0.94 0.97 1" />
+        </Profile>
+
+        <Profile name="svapaToggleListBg" extends="baseReference">
+            <position value="61px 131px" />
+            <size value="1796px 760px" />
+            <imageColor value="0.23 0.28 0.37 1" />
+        </Profile>
+
+        <Profile name="svapaToggleListViewport" extends="baseReference">
+            <position value="79px 131px" />
+            <size value="1764px 746px" />
+            <clipping value="true" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleListContainer" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 746px" />
+            <flowDirection value="vertical" />
+            <elementSpacing value="10px" />
+            <alignmentY value="top" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleRowCard" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 116px" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleRowBg" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="1764px 116px" />
+            <imageColor value="0.12 0.18 0.30 1" />
+        </Profile>
+
+        <Profile name="svapaToggleDescriptionFrame" extends="baseReference">
+            <position value="16px 16px" />
+            <size value="1236px 84px" />
+            <imageColor value="0.96 0.97 0.99 1" />
+        </Profile>
+
+        <Profile name="svapaToggleDescriptionText" extends="fs25_textDefault">
+            <position value="34px 24px" />
+            <size value="1198px 68px" />
+            <textSize value="20px" />
+            <textBold value="false" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="middle" />
+            <textLayoutMode value="fill" />
+            <textLineHeightScale value="1.0" />
+            <textMaxNumLines value="2" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryOption" extends="baseReference">
+            <position value="1294px 22px" />
+            <size value="432px 72px" />
+            <wrap value="false" />
+            <buttonLRChange value="false" />
+            <registerContinuousInput value="false" />
+            <hideLeftRightButtons value="false" />
+            <disableButtonsOnSingleText value="false" />
+            <useYesNoTexts value="false" />
+            <imageColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryBackground" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="432px 72px" />
+            <imageColor value="0.22 0.22 0.24 1" />
+        </Profile>
+
+        <Profile name="svapaToggleBinarySlider" extends="baseReference">
+            <position value="0px 0px" />
+            <size value="216px 72px" />
+            <imageColor value="0.59 0.76 0.09 1" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryButtonBase" extends="baseReference">
+            <size value="216px 72px" />
+            <textSize value="20px" />
+            <textBold value="true" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+            <imageColor value="0 0 0 0" />
+            <textColor value="0.86 0.86 0.86 1" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryLeft" extends="svapaToggleBinaryButtonBase">
+            <position value="0px 0px" />
+            <textColor value="0 0 0 1" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryRight" extends="svapaToggleBinaryButtonBase">
+            <position value="216px 0px" />
+        </Profile>
+
+        <Profile name="svapaToggleBinaryHiddenText" extends="fs25_textDefault">
+            <position value="0px 0px" />
+            <size value="0px 0px" />
+            <textSize value="1px" />
+            <textColor value="0 0 0 0" />
+        </Profile>
+
+        <Profile name="svapaToggleFooterText" extends="fs25_textDefault">
+            <position value="82px 914px" />
+            <size value="760px 42px" />
+            <textSize value="18px" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="left" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaToggleBottomButton" extends="baseReference">
+            <size value="220px 52px" />
+            <textSize value="22px" />
+            <textBold value="true" />
+            <textColor value="0 0 0 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+            <imageColor value="0.86 0.89 0.94 1" />
+        </Profile>
+
+        <Profile name="svapaTogglePageButton" extends="svapaToggleBottomButton">
+            <size value="170px 52px" />
+            <textSize value="20px" />
+        </Profile>
+
+        <Profile name="svapaTogglePageIndicatorText" extends="fs25_textDefault">
+			<position value="780px 50px" />
+			<size value="360px 40px" />
+			<textSize value="22px" />
+			<textColor value="0 0 0 1" />
+			<textAlignment value="center" />
+			<textVerticalAlignment value="middle" />
+		</Profile>
+
+        <Profile name="svapaToggleEmptyText" extends="fs25_textDefault">
+            <position value="0px 346px" />
+            <size value="1764px 50px" />
+            <textSize value="24px" />
+            <textColor value="1 1 1 1" />
+            <textAlignment value="center" />
+            <textVerticalAlignment value="middle" />
+        </Profile>
+
+        <Profile name="svapaTogglePrevPageButton" extends="svapaTogglePageButton">
+            <position value="780px 960px" />
+        </Profile>
+
+        <Profile name="svapaToggleNextPageButton" extends="svapaTogglePageButton">
+            <position value="970px 960px" />
+        </Profile>
+
+        <Profile name="svapaToggleBottomButtonSave" extends="svapaToggleBottomButton">
+            <position value="1300px 50px" />
+        </Profile>
+
+        <Profile name="svapaToggleBottomButtonClose" extends="svapaToggleBottomButton">
+             <position value="1530px 50px" />
+        </Profile>
+    </GUIProfiles>
+</GUI>
