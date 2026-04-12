@@ -1,0 +1,13 @@
+GIANTS Editor userAttributes on trigger TG:
+
+onCreate="UpgradeTrigger.onCreate"
+upgradeConfig="$moddir$/config/upgrades.xml"
+actionText="Модернизация"
+
+Recommended modDesc.xml load order:
+1. UpgradeTrigger.lua
+2. UpgradeEvent.lua
+3. UpgradeGUI.lua
+
+Register GUI once on map load / mod init:
+UpgradeGUI.register("$moddir$/gui/UpgradeGUI.xml")

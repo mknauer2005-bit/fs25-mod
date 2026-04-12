@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<universalDisplay triggerNode="playerTrigger">
+    <display node="display_reputation" metric="reputation" field="available" font="DIGIT" mask="000000" alignment="CENTER" size="0.13" scaleX="1" scaleY="1" emissiveScale="0.85" color="0.45 0.06 0.08" defaultText="" />
+    <display node="display_agro" metric="agro" field="available" font="DIGIT" mask="000000" alignment="CENTER" size="0.13" scaleX="1" scaleY="1" emissiveScale="0.85" color="0.45 0.06 0.08" defaultText="" />
+    <display node="display_animal" metric="animal" field="available" font="DIGIT" mask="000000" alignment="CENTER" size="0.13" scaleX="1" scaleY="1" emissiveScale="0.85" color="0.45 0.06 0.08" defaultText="" />
+    <display node="display_forestry" metric="forestry" field="available" font="DIGIT" mask="000000" alignment="CENTER" size="0.13" scaleX="1" scaleY="1" emissiveScale="0.85" color="0.45 0.06 0.08" defaultText="" />
+    <display node="display_industry" metric="industry" field="available" font="DIGIT" mask="000000" alignment="CENTER" size="0.13" scaleX="1" scaleY="1" emissiveScale="0.85" color="0.45 0.06 0.08" defaultText="" />
+</universalDisplay>
