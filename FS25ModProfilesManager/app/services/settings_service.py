@@ -23,7 +23,7 @@ class SettingsService:
         try:
             data = json.loads(self.settings_file.read_text(encoding="utf-8"))
             settings = Settings.from_dict(data)
-        except (json.JSONDecodeError, OSError) as exc:
+        except (json.JSONDecodeError, OSError):
             logger.exception("Не удалось прочитать settings.json")
             settings = Settings()
             self.save(settings)
@@ -34,8 +34,7 @@ class SettingsService:
         return settings
 
     def save(self, settings: Settings) -> None:
-        payload = settings.to_dict()
         self.settings_file.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
+            json.dumps(settings.to_dict(), ensure_ascii=False, indent=2),
             encoding="utf-8",
         )

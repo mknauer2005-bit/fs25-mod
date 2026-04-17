@@ -20,7 +20,7 @@ class ProfileCard(tk.Frame):
         on_delete,
         on_open,
     ) -> None:
-        bg_color = self.ACTIVE_BG if profile.is_active else master.cget("bg")
+        bg_color = self.ACTIVE_BG if profile.is_active else "#f0f0f0"
         super().__init__(master, bd=1, relief="solid", bg=bg_color, padx=12, pady=10)
         self.profile = profile
 

@@ -20,6 +20,7 @@ def ensure_data_structure() -> dict[str, Path]:
         "root": root,
         "settings": root / "settings.json",
         "profiles": root / "profiles.json",
+        "games": root / "games.json",
         "backups": backups,
         "log": root / "app.log",
     }
