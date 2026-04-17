@@ -114,18 +114,36 @@ class MainWindow(tk.Tk):
         self.gs_status_var = tk.StringVar()
         self.exe_status_var = tk.StringVar()
 
-        ttk.Label(frame, text="Папка настроек").grid(row=0, column=0, sticky="w")
-        ttk.Entry(frame, textvariable=self.settings_dir_var, width=80).grid(row=1, column=0, sticky="ew")
-        ttk.Button(frame, text="Выбрать", command=self.choose_settings_dir).grid(row=1, column=1, padx=4)
-        ttk.Button(frame, text="Открыть", command=self.open_settings_dir).grid(row=1, column=2, padx=4)
-        ttk.Label(frame, textvariable=self.gs_status_var).grid(row=1, column=3, sticky="w", padx=8)
+        left = ttk.Frame(frame)
+        left.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-        ttk.Label(frame, text="Путь к игре").grid(row=2, column=0, sticky="w", pady=(8, 0))
-        ttk.Entry(frame, textvariable=self.exe_var, width=80).grid(row=3, column=0, sticky="ew")
-        ttk.Button(frame, text="Выбрать", command=self.choose_exe).grid(row=3, column=1, padx=4)
-        ttk.Button(frame, text="Открыть папку", command=self.open_exe_folder).grid(row=3, column=2, padx=4)
-        ttk.Button(frame, text="Запустить игру", command=self.launch_game).grid(row=3, column=3, padx=4)
-        ttk.Label(frame, textvariable=self.exe_status_var).grid(row=3, column=4, sticky="w", padx=8)
+        right = ttk.Frame(frame)
+        right.pack(side=tk.RIGHT, fill=tk.Y, padx=(14, 0))
+
+        ttk.Label(left, text="Папка настроек").grid(row=0, column=0, sticky="w")
+        ttk.Entry(left, textvariable=self.settings_dir_var, width=80).grid(row=1, column=0, sticky="ew")
+        ttk.Button(left, text="Выбрать", command=self.choose_settings_dir).grid(row=1, column=1, padx=4)
+        ttk.Button(left, text="Открыть", command=self.open_settings_dir).grid(row=1, column=2, padx=4)
+        ttk.Label(left, textvariable=self.gs_status_var).grid(row=1, column=3, sticky="w", padx=8)
+
+        ttk.Label(left, text="Путь к игре").grid(row=2, column=0, sticky="w", pady=(8, 0))
+        ttk.Entry(left, textvariable=self.exe_var, width=80).grid(row=3, column=0, sticky="ew")
+        ttk.Button(left, text="Выбрать", command=self.choose_exe).grid(row=3, column=1, padx=4)
+        ttk.Button(left, text="Открыть папку", command=self.open_exe_folder).grid(row=3, column=2, padx=4)
+        ttk.Label(left, textvariable=self.exe_status_var).grid(row=3, column=3, sticky="w", padx=8)
+
+        self.play_button = tk.Button(
+            right,
+            text="ИГРАТЬ",
+            command=self.launch_game,
+            width=16,
+            height=3,
+            font=("Segoe UI", 12, "bold"),
+            relief="raised",
+            bd=2,
+            cursor="hand2",
+        )
+        self.play_button.pack(expand=True, fill=tk.BOTH)
 
     def _build_status_block(self, parent: ttk.Frame) -> None:
         frame = ttk.LabelFrame(parent, text="Состояние", padding=10)
@@ -503,6 +521,11 @@ class MainWindow(tk.Tk):
 
         self.gs_status_var.set("gameSettings.xml найден" if game_settings_ok else "gameSettings.xml не найден")
         self.exe_status_var.set("EXE найден" if exe_ok else "EXE не найден")
+
+        if exe_ok:
+            self.play_button.configure(state=tk.NORMAL, bg="#2f9e44", activebackground="#2b8a3e", fg="white", activeforeground="white")
+        else:
+            self.play_button.configure(state=tk.DISABLED, bg="#c92a2a", activebackground="#c92a2a", fg="white", disabledforeground="#f8f9fa")
 
         xml_mods = "—"
         if self.current_game:
