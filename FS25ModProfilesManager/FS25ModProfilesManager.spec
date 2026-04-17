@@ -5,7 +5,7 @@ a = Analysis(
     ['app/main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('fs25_mod_manager.ico', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

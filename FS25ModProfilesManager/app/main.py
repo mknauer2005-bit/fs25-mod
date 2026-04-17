@@ -14,7 +14,8 @@ APP_USER_MODEL_ID = "Svapa.FS25ModProfilesManager.1"
 
 def _resolve_icon_path() -> Path:
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).resolve().parent / ICON_FILENAME
+        base_path = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+        return base_path / ICON_FILENAME
     return Path(__file__).resolve().parents[1] / ICON_FILENAME
 
 
