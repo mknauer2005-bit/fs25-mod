@@ -9,6 +9,7 @@ from app.utils.paths import ensure_data_structure
 
 
 ICON_FILENAME = "fs25_mod_manager.ico"
+APP_USER_MODEL_ID = "Svapa.FS25ModProfilesManager.1"
 
 
 def _resolve_icon_path() -> Path:
@@ -17,17 +18,36 @@ def _resolve_icon_path() -> Path:
     return Path(__file__).resolve().parents[1] / ICON_FILENAME
 
 
+def _apply_windows_app_id() -> None:
+    if not sys.platform.startswith("win"):
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_USER_MODEL_ID)
+    except Exception:
+        pass
+
+
+def _apply_window_icon(app: MainWindow, icon_path: Path) -> None:
+    if not icon_path.exists():
+        return
+
+    try:
+        app.wm_iconbitmap(str(icon_path))
+        app.iconbitmap(str(icon_path))
+    except Exception:
+        pass
+
+
 def main() -> None:
     paths = ensure_data_structure()
     setup_logging(paths["log"])
-    app = MainWindow()
 
-    icon_path = _resolve_icon_path()
-    if icon_path.exists():
-        try:
-            app.iconbitmap(str(icon_path))
-        except Exception:
-            pass
+    _apply_windows_app_id()
+
+    app = MainWindow()
+    _apply_window_icon(app, _resolve_icon_path())
 
     app.mainloop()
 
