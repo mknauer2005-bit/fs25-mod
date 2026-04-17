@@ -181,7 +181,7 @@ class MainWindow(tk.Tk):
         ttk.Button(frame, text="Выход", command=self.destroy).pack(side=tk.RIGHT)
 
     def _game_labels(self) -> list[str]:
-        return [f"{g.name} ({g.id})" for g in self.games]
+        return [g.name for g in self.games]
 
     def _selected_game_by_combo(self) -> GameProfile | None:
         index = self.game_selector.current()
