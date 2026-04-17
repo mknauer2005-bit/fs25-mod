@@ -103,19 +103,24 @@ class MainWindow(tk.Tk):
 
         ttk.Button(frame, text="Добавить профиль", command=self.add_profile).pack(anchor="w", pady=(0, 8))
 
-        canvas = tk.Canvas(frame, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
-        self.cards_frame = ttk.Frame(canvas)
+        self.cards_canvas = tk.Canvas(frame, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=self.cards_canvas.yview)
+        self.cards_frame = ttk.Frame(self.cards_canvas)
 
         self.cards_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all")),
+            lambda e: self.cards_canvas.configure(scrollregion=self.cards_canvas.bbox("all")),
         )
-        canvas.create_window((0, 0), window=self.cards_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
+        self.cards_window_id = self.cards_canvas.create_window((0, 0), window=self.cards_frame, anchor="nw")
+        self.cards_canvas.bind("<Configure>", self._on_cards_canvas_resize)
+        self.cards_canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.cards_canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+    def _on_cards_canvas_resize(self, event: tk.Event) -> None:
+        self.cards_canvas.itemconfigure(self.cards_window_id, width=event.width)
 
     def _build_bottom_panel(self, parent: ttk.Frame) -> None:
         frame = ttk.Frame(parent)
@@ -261,7 +266,12 @@ class MainWindow(tk.Tk):
 
         self.refresh_state()
 
+    def _sort_profiles_for_ui(self) -> None:
+        self.profiles.sort(key=lambda p: (not p.is_active, p.name.lower()))
+
     def refresh_profiles(self) -> None:
+        self._sort_profiles_for_ui()
+
         for child in self.cards_frame.winfo_children():
             child.destroy()
 
@@ -285,7 +295,7 @@ class MainWindow(tk.Tk):
                 on_delete=lambda p=profile: self.delete_profile(p),
                 on_open=lambda p=profile: self.open_profile_dir(p),
             )
-            card.pack(fill=tk.X, pady=4)
+            card.pack(fill=tk.X, padx=4, pady=6)
 
     def open_profile_dir(self, profile: Profile) -> None:
         path = Path(profile.mods_path)
