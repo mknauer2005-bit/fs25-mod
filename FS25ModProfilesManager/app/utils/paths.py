@@ -1,28 +1,38 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+
 
 APP_DIR_NAME = "FS25ModProfilesManager"
 
 
+def get_base_dir() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parents[2]
+
+
 def get_app_data_dir() -> Path:
-    base = Path.home() / "AppData" / "Local"
-    return base / APP_DIR_NAME
+    return get_base_dir() / "data"
 
 
 def ensure_data_structure() -> dict[str, Path]:
-    root = get_app_data_dir()
-    backups = root / "backups"
-    root.mkdir(parents=True, exist_ok=True)
+    base_dir = get_base_dir()
+    data_dir = get_app_data_dir()
+    backups = base_dir / "backups"
+
+    data_dir.mkdir(parents=True, exist_ok=True)
     backups.mkdir(parents=True, exist_ok=True)
 
     return {
-        "root": root,
-        "settings": root / "settings.json",
-        "profiles": root / "profiles.json",
-        "games": root / "games.json",
+        "base": base_dir,
+        "root": data_dir,
+        "settings": data_dir / "settings.json",
+        "profiles": data_dir / "profiles.json",
+        "games": data_dir / "games.json",
         "backups": backups,
-        "log": root / "app.log",
+        "log": base_dir / "app.log",
     }
 
 
